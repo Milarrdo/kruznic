@@ -43,36 +43,37 @@ if sekcia == "Generátor":
         tmp_img = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
         fig.savefig(tmp_img.name, dpi=200, bbox_inches="tight")
 
-       from fpdf import FPDF
+        pdf = FPDF()
+        pdf.add_page()
 
-pdf = FPDF()
-pdf.add_page()
+        # ✅ pridáme font s podporou diakritiky
+        pdf.add_font("DejaVu", "", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", uni=True)
+        pdf.set_font("DejaVu", size=12)
 
-# Nastavíme font, ktorý podporuje diakritiku (DejaVu Sans)
-pdf.add_font("DejaVu", "", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", uni=True)
-pdf.set_font("DejaVu", size=12)
+        pdf.cell(0, 10, "Generovanie bodov na kružnici", ln=True, align="C")
+        pdf.ln(5)
+        pdf.cell(0, 8, f"Autor: {autor}", ln=True)
+        pdf.cell(0, 8, f"Kontakt: {kontakt}", ln=True)
+        pdf.cell(0, 8, f"Stred: ({x_stred:.2f}, {y_stred:.2f}) {jednotka}", ln=True)
+        pdf.cell(0, 8, f"Polomer: {polomer:.2f} {jednotka}", ln=True)
+        pdf.cell(0, 8, f"Počet bodov: {pocet_bodov}", ln=True)
+        pdf.ln(5)
+        pdf.image(tmp_img.name, w=170)
 
-pdf.cell(200, 10, txt="Generovanie bodov na kružnici", ln=True, align="C")
-pdf.cell(200, 10, txt=f"Autor: {autor}", ln=True)
-pdf.cell(200, 10, txt=f"Kontakt: {kontakt}", ln=True)
-pdf.cell(200, 10, txt=f"Stred: ({x_stred}, {y_stred}) {jednotka}", ln=True)
-pdf.cell(200, 10, txt=f"Polomer: {polomer} {jednotka}", ln=True)
-pdf.cell(200, 10, txt=f"Počet bodov: {pocet_bodov}", ln=True)
-
-pdf.output("vystup.pdf")
-
+        out_path = "vystup.pdf"
+        pdf.output(out_path)
 
         with open(out_path, "rb") as f:
-            st.download_button("Stiahnuť PDF", f, file_name="vystup.pdf", mime="application/pdf")
+            st.download_button("📥 Stiahnuť PDF", f, file_name="vystup.pdf", mime="application/pdf")
 
         os.unlink(tmp_img.name)
-        st.success("PDF je pripravené na stiahnutie.")
+        st.success("PDF bolo vygenerované a je pripravené na stiahnutie ✅")
 
 else:
     st.title("O projekte")
     st.write("""
 **Názov úlohy:** Body na kružnici – webová aplikácia  
-**Použité technológie:** Python, Streamlit, Matplotlib, FPDF  
+**Použité technológie:** Python, Streamlit, Matplotlib, FPDF2  
 
 **Popis:**  
 Používateľ zadáva stred, polomer, počet bodov a farbu.  
@@ -80,4 +81,5 @@ Aplikácia vykreslí body na kružnici s číselnými osami (vrátane jednotiek)
 a umožní export do PDF s parametrami úlohy, menom a kontaktom autora.
 """)
     st.write(f"**Autor:** {autor}  \n**Kontakt:** {kontakt}")
+
 
